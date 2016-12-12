@@ -37,18 +37,19 @@
       (pvar? f2) (assoc smap f2 f1)
       :default nil)))
 
-;;; theorems are curried fns of a specter path and a form; the they transform
-;;; the form at the given path, throwing if unable.
-
-(defn check-focused-val [focused-val p q]
-  (if-let [smap (unify {} focused-val p)]
+;; If form matches with p, replace it with q. If not, try the other way around.
+;; If it still doesn't work, throw.
+(defn apply-replacement-rule [form p q]
+  (if-let [smap (unify {} form p)]
     (walk smap q)
-    (if-let [smap (unify {} focused-val q)]
+    (if-let [smap (unify {} form q)]
       (walk smap p)
       (throw (ex-info "Can't apply theorem"
-                      {:focused-val focused-val
+                      {:focused-val form
                        :expr (list '= p q)})))))
 
+;; theorems are curried fns of a specter path and a form; they transform
+;; the form at the given path, throwing if unable.
 (defn theorem [args body]
   (if-not (and (= 3 (count body))
                (= '= (first body)))
@@ -62,7 +63,7 @@
       (fn [focus-path]
         (fn [form]
           (sp/transform focus-path
-                        #(check-focused-val % p q)
+                        #(apply-replacement-rule % p q)
                         form))))))
 
 ;; theorem sugar

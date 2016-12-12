@@ -5,7 +5,16 @@
 
 (deftest unify-test
   (are [f1 f2 smap] (= smap (unify {} f1 f2))
-    '(car pvar-a pvar-b) '(car x y) '{pvar-a x, pvar-b y}))
+    '(car pvar-a pvar-b) '(car x y) '{pvar-a x, pvar-b y})
+  )
+
+(deftest match-form-test
+  (is (= false (apply-replacement-rule '(prim? (cons a b))
+                           '(prim? (cons pvar-x pvar-y)) false)))
+
+  (is (= 'a (apply-replacement-rule '(first (cons a b))
+                        '(first (cons pvar-x pvar-y)) 'pvar-x)))
+  )
 
 (deftest test-axioms
   (are [form proof] (check-proof form proof)
@@ -21,6 +30,5 @@
     [(first-cons [])]
 
     '(rest (cons a true))
-    [(rest-cons [])]))
-
-
+    [(rest-cons [])]
+    ))
