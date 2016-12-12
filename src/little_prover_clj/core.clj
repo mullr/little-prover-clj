@@ -29,9 +29,11 @@
   (let [f1 (walk smap f1)
         f2 (walk smap f2)]
     (cond
-      (and (sequential? f1) (seq f1)) (-> smap
-                                          (unify (first f1) (first f2))
-                                          (unify (rest f1) (rest f2)))
+      (and (sequential? f1) (seq f1)) (if (and (sequential? f2) (seq f2))
+                                        (-> smap
+                                            (unify (first f1) (first f2))
+                                            (unify (rest f1) (rest f2)))
+                                        (assoc smap f1 f2))
       (= f1 f2) smap
       (pvar? f1) (assoc smap f1 f2)
       (pvar? f2) (assoc smap f2 f1)
@@ -41,9 +43,9 @@
 ;; If it still doesn't work, throw.
 (defn apply-replacement-rule [form p q]
   (if-let [smap (unify {} form p)]
-    (walk smap q)
+    (w/prewalk-replace smap q)
     (if-let [smap (unify {} form q)]
-      (walk smap p)
+      (w/prewalk-replace smap p)
       (throw (ex-info "Can't apply theorem"
                       {:focused-val form
                        :expr (list '= p q)})))))
@@ -99,3 +101,11 @@
 (defthm rest-cons [x y]
   (= (rest (cons x y))
      y))
+
+(defthm equal-same [x]
+  (= (= x x)
+     true))
+
+(defthm equal-swap [x y]
+  (= (= x y)
+     (= y x)))

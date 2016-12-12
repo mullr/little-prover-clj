@@ -31,4 +31,12 @@
 
     '(rest (cons a true))
     [(rest-cons [])]
+
+    '(= a a)
+    [(equal-same [])]
+
+    '(= (= a b) (= b a))
+    [(equal-swap [sp/LAST])
+     (equal-same [])]
     ))
+
