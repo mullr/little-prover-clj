@@ -38,5 +38,21 @@
     '(= (= a b) (= b a))
     [(equal-swap [sp/LAST])
      (equal-same [])]
+
+    '(= a (if true a b))
+    [(if-true [sp/LAST])
+     (equal-same [])]
+
+    '(= b (if false a b))
+    [(if-false [sp/LAST])
+     (equal-same [])]
+
+    '(= b (if nil a b))
+    [(if-nil [sp/LAST])
+     (equal-same [])]
+
+    '(= b (if q b b))
+    [(if-same [sp/LAST])
+     (equal-same [])]
     ))
 

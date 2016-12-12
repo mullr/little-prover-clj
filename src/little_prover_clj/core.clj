@@ -109,3 +109,19 @@
 (defthm equal-swap [x y]
   (= (= x y)
      (= y x)))
+
+(defthm if-true [x y]
+  (= (if true x y)
+     x))
+
+(defthm if-false [x y]
+  (= (if false x y)
+     y))
+
+(defthm if-nil [x y]
+  (= (if nil x y)
+     y))
+
+(defthm if-same [x y]
+  (= (if x y y)
+     y))
